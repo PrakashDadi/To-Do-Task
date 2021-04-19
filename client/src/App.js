@@ -11,12 +11,15 @@ function App() {
   const [completed, setCompleted] = useState('');
   const [todoList, setTodoList] = useState([]);
 
+  const [newstatus, setNewstatus]=useState("");
+
   useEffect(() => {
     Axios.get("http://localhost:3001/api/get").then((response) => {
       setTodoList(response.data)
     })
   }, [])
   const submitReview = () => {
+
     Axios.post("http://localhost:3001/api/insert", {
       id: id,
       title: title,
@@ -24,10 +27,28 @@ function App() {
       createdTime: createdTime,
       createdBY: createdBY,
       completed: completed
-    }).then(() => {
-      alert('succesful insert')
     });
+
+    setTodoList([...todoList, {
+        id: id,
+        title: title,
+        description: description,
+        createdTime: createdTime,
+        createdBY: createdBY,
+        completed: completed
+      }])    
   };
+
+  const deleteTodoList = (taskId)=>{
+    Axios.delete(`http://localhost:3001/api/delete/${taskId}`)
+  }
+  const updateTodoList = (taskId)=>{
+    Axios.put("http://localhost:3001/api/update",{
+      id: taskId,
+      completed: newstatus,
+    })
+    setNewstatus("")
+  }
 
   return (
     <div className="App">
@@ -62,9 +83,15 @@ function App() {
 
         {todoList.map((val) => {
           return (
-            <h3>
-              id: {val.id} | title:{val.title} | description:{val.description} | createdTime: {val.createdTime} |createdBY: {val.createdBY} |complted: {val.completed}
-            </h3>
+            <div className="card">
+              <h3>id: {val.id} | title:{val.title} | description:{val.description} | createdTime: {val.createdTime} |createdBY: {val.createdBY} |complted: {val.completed}</h3>
+
+              <button onClick={()=>{deleteTodoList(val.id)}}>Delete</button>
+              <input type="text" id="update" onChange={(e) =>{
+                setNewstatus(e.target.value)
+              }}/>
+              <button onClick={()=>{updateTodoList(val.id)}}>Update</button>
+            </div>
           );
 
         })}
