@@ -35,6 +35,25 @@ app.post("/api/insert", (req, res) => {
     });
 });
 
+app.delete("/api/delete/:id", (req,res)=>{
+    const id = req.params.id
+    const sqlDelete = "DELETE FROM todo WHERE id=?";
+
+    db.query(sqlDelete, id, (err,result) => {
+      if (err) console.log(err)  
+    })   
+})
+
+app.put("/api/update", (req,res)=>{
+    const id = req.body.id
+    const completed = req.body.completed
+    const sqlUpdate = "UPDATE todo SET completed=? WHERE id=?";
+
+    db.query(sqlUpdate, [completed,id],(err,result) => {
+      if (err) console.log(err)  
+    })   
+})
+
 app.listen(3001, () => {
     console.log("running on port 3001");
 });
